@@ -37,7 +37,7 @@ function fill_array(str) {
         result.push(i);
     }
 
-    result.push(Number(number));
+    if (number != '') result.push(Number(number));
 
     return result;
 }
@@ -63,15 +63,18 @@ function get_final_result(arr) {
     let index_open_bracket = 0;
     let index_close_bracket = 0;
 
-    for (let i = 0; i < arr.length - 1; i++) {
-        if (arr[i] == '(') index_open_bracket = i;
-        
+    for (let i = 0; i < arr.length - 1; i++) {        
         if (arr[i] == ')') {
             index_close_bracket = i;
+            index_open_bracket = get_open_bracket_index(arr, index_close_bracket);
             let in_brackets = arr.slice(index_open_bracket + 1, index_close_bracket);
             let temp_arr = arr.slice();
-            temp_arr.splice(index_open_bracket, (index_close_bracket - index_open_bracket), get_final_result(in_brackets))
+            temp_arr.splice(index_open_bracket, (index_close_bracket - index_open_bracket + 1), get_final_result(in_brackets))
             return get_final_result(temp_arr);            
+        }
+
+        if ((arr.includes('(')) || (arr.includes(')'))) {
+            continue;
         }
 
         if ((arr[i] == '*') || (arr[i] == '/')) {
@@ -92,7 +95,15 @@ function get_final_result(arr) {
     }
 }
 
-let expr = " 25 * (  64 * 63 - 89 * 14  ) * 49 ";
+function get_open_bracket_index(arr, close_bracket_index) {
+    let i = close_bracket_index;
+    while(true) {
+        if (arr[i] == '(') return i;
+        i--;
+    }
+}
+
+let expr = " (  78 * (  89 + 17 )  ) ";
 
 let res = expressionCalculator(expr);
 console.log(res);
